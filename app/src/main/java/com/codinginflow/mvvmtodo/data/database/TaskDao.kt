@@ -2,7 +2,7 @@ package com.codinginflow.mvvmtodo.data.database
 
 import androidx.room.*
 import com.codinginflow.mvvmtodo.data.model.Task
-import com.codinginflow.mvvmtodo.ui.viewmodel.SortOrder
+import com.codinginflow.mvvmtodo.data.database.SortOrder
 import kotlinx.coroutines.flow.Flow
 
 
