@@ -3,6 +3,7 @@ package com.codinginflow.mvvmtodo.ui.Fragments.Task
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -10,9 +11,29 @@ import androidx.recyclerview.widget.RecyclerView
 import com.codinginflow.mvvmtodo.data.model.Task
 import com.codinginflow.mvvmtodo.databinding.ItemTaskHolderBinding
 
-class TaskAdapter() : ListAdapter<Task, TaskAdapter.TaskViewHolder>(DiffCallback()) {
+class TaskAdapter(private val listener: onItemClickListener) : ListAdapter<Task, TaskAdapter.TaskViewHolder>(DiffCallback()) {
 
-    class TaskViewHolder(private val binding: ItemTaskHolderBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class TaskViewHolder(private val binding: ItemTaskHolderBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.apply {
+                root.setOnClickListener {
+                    val position = adapterPosition
+                    if(position != RecyclerView.NO_POSITION) {
+                        val task = getItem(position)
+                        listener.onItemClick(task)
+                    }
+                }
+                checkBoxCompleted.setOnClickListener {
+                    val position = adapterPosition
+                    if(position != RecyclerView.NO_POSITION){
+                        val task = getItem(position)
+                        listener.onCheckBoxClick(task, checkBoxCompleted.isChecked)
+                    }
+                }
+            }
+        }
+
         fun bind(task: Task){
             binding.apply {
                 checkBoxCompleted.isChecked = task.completed
@@ -30,6 +51,11 @@ class TaskAdapter() : ListAdapter<Task, TaskAdapter.TaskViewHolder>(DiffCallback
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+
+    interface onItemClickListener {
+        fun onItemClick(task: Task)
+        fun onCheckBoxClick(task: Task, isChecked: Boolean)
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Task>() {
