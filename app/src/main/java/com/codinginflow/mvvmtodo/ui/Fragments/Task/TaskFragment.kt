@@ -28,8 +28,9 @@ import kotlinx.coroutines.launch
 class TaskFragment : Fragment(), TaskAdapter.onItemClickListener {
 
     private val viewModel : TaskViewModel by viewModels()
-    private lateinit var _binding : FragmentTaskBinding
-    private val binding get() = _binding
+    private var _binding : FragmentTaskBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var searchView : SearchView
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -125,7 +126,14 @@ class TaskFragment : Fragment(), TaskAdapter.onItemClickListener {
         inflater.inflate(R.menu.menu_fragment_tasks, menu)
 
         val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem.actionView as SearchView
+        searchView = searchItem.actionView as SearchView
+
+        val pendingQuery = viewModel.searchQuery.value
+        if (pendingQuery !== null && pendingQuery.isNotEmpty()) {
+            searchItem.expandActionView()
+            searchView.setQuery(pendingQuery, false)
+        }
+
         searchView.onQueryTextChanged {
             // update search query
             viewModel.searchQuery.value = it
@@ -160,7 +168,15 @@ class TaskFragment : Fragment(), TaskAdapter.onItemClickListener {
 
     }
 
+    override fun onDestroy() {
+        _binding = null
+        super.onDestroy()
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        searchView.setOnQueryTextListener(null)
+    }
 
 
 }

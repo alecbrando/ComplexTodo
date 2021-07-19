@@ -24,8 +24,8 @@ import kotlinx.coroutines.flow.collect
 class AddEditTaskFragment : Fragment() {
 
     private val viewModel: AddEditTaskViewModel by viewModels()
-    private lateinit var _binding : FragmentAddEditTaskBinding
-    private val binding get() = _binding
+    private var _binding : FragmentAddEditTaskBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,6 +70,11 @@ class AddEditTaskFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onDestroy() {
+        _binding = null
+        super.onDestroy()
     }
 
 }
